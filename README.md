@@ -26,7 +26,7 @@ Usage
 Pass to the method `process()` the UTF-8 encoded string you wish to transliterate:
 
 ```
-use dosamigos\transliterator\TransliteratorHelper;
+use sbs\helpers\TransliteratorHelper;
 
 // will echo AAAAAAAECEEEEIIIIDNOOOOOUUUUYssaaaaaaaeceeeeiiiidnooooouuuuyy
 TransliteratorHelper::process('ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöùúûüýÿ', '', 'en'));
