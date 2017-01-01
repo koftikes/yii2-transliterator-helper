@@ -10,31 +10,26 @@ use Yii;
  */
 class BaseTransliteratorHelper
 {
+    const UNKNOWN = '';
+
     /**
-     * Transliterates UTF-8 encoded text to US-ASCII. If 'intl' extension is loaded it will use it to transliterate the
-     * string, otherwise, it will fallback on Unicode character code replacement.
+     * Transliterates UTF-8 encoded text to US-ASCII.
      *
      * @param string $string the UTF-8 encoded string.
-     * @param string $unknown replacement string for characters that do not have a suitable ASCII equivalent
      * @param string $language optional ISO 639 language code that denotes the language of the input and
      * is used to apply language-specific variations. Otherwise the current display language will be used.
      * @return string the transliterated text
      */
-    public static function process($string, $unknown = '?', $language = null)
+    public static function process($string, $language = null)
     {
-        // If intl extension load
-        if (extension_loaded('intl') === true) {
-            $options = 'Any-Latin; Latin-ASCII; NFD; [:Nonspacing Mark:] Remove; NFC;';
-
-            return transliterator_transliterate($options, $string);
-        }
         if (!preg_match('/[\x80-\xff]/', $string)) {
             return $string;
         }
+
         static $tail_bytes;
 
         if (!isset($tail_bytes)) {
-            $tail_bytes = array();
+            $tail_bytes = [];
             for ($n = 0; $n < 256; $n++) {
                 if ($n < 0xc0) {
                     $remaining = 0;
@@ -76,10 +71,10 @@ class BaseTransliteratorHelper
                             $sequence .= $c;
                         } else {
                             if ($len == 0) {
-                                $result[] = $unknown;
+                                $result[] = self::UNKNOWN;
                                 break 2;
                             } else {
-                                $result[] = $unknown;
+                                $result[] = self::UNKNOWN;
                                 --$i;
                                 ++$len;
                                 continue 2;
@@ -88,6 +83,7 @@ class BaseTransliteratorHelper
                     } while (--$remaining);
 
                     $n = ord($head);
+                    $ord = 0;
                     if ($n <= 0xdf) {
                         $ord = ($n - 192) * 64 + (ord($sequence[1]) - 128);
                     } elseif ($n <= 0xef) {
@@ -103,34 +99,33 @@ class BaseTransliteratorHelper
                             (ord($sequence[2]) - 128) * 262144 + (ord($sequence[3]) - 128) * 4096 +
                             (ord($sequence[4]) - 128) * 64 + (ord($sequence[5]) - 128);
                     }
-                    $result[] = static::replace($ord, $unknown, $language);
+                    $result[] = static::replace($ord, $language);
                     $head = '';
                 } elseif ($c < "\x80") {
                     $result[] = $c;
                     $head = '';
                 } elseif ($c < "\xc0") {
                     if ($head == '') {
-                        $result[] = $unknown;
+                        $result[] = self::UNKNOWN;
                     }
                 } else {
-                    $result[] = $unknown;
+                    $result[] = self::UNKNOWN;
                     $head = '';
                 }
             }
         }
 
-        return implode('', $result);
+        return trim($string, '-');
     }
 
     /**
      * @param int $ord an ordinal Unicode character code
-     * @param string $unknown a replacement string for characters that do not have a suitable ASCII equivalent
      * @param string $language optional ISO 639 language code that specifies the language of the input and is used to apply
      * @return string the ASCII replacement character
      */
-    public static function replace($ord, $unknown = '?', $language = null)
+    public static function replace($ord, $language = null)
     {
-        static $map = array();
+        static $map = [];
 
         if (!isset($language)) {
             $language = Yii::$app->language;
@@ -145,22 +140,23 @@ class BaseTransliteratorHelper
             $base = [];
             $data_dir = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR;
             $file = realpath($data_dir . sprintf('x%02x', $key) . '.php');
-
             if (file_exists($file)) {
                 include $file;
                 // $base + $variant are included vars from
-                if ($language != 'en' && isset($variant[$language])) {
-                    $map[$key][$language] = $variant[$language] + $base;
-                } else {
-                    $map[$key][$language] = $base;
+                if (isset($base)) {
+                    if ($language != 'en' && isset($variant[$language])) {
+                        $map[$key][$language] = $variant[$language] + $base;
+                    } else {
+                        $map[$key][$language] = $base;
+                    }
                 }
             } else {
-                $map[$key][$language] = array();
+                $map[$key][$language] = [];
             }
         }
 
         $ord = $ord & 255;
 
-        return isset($map[$key][$language][$ord]) ? $map[$key][$language][$ord] : $unknown;
+        return isset($map[$key][$language][$ord]) ? $map[$key][$language][$ord] : self::UNKNOWN;
     }
 }
