@@ -115,6 +115,10 @@ class BaseTransliteratorHelper
             }
         }
 
+        $string = implode('', $result);
+        $string = preg_replace('/[^a-zA-Z0-9=\s—–-]+/u', '', $string);
+        $string = preg_replace('/[=\s—–-]+/u', '-', $string);
+
         return trim($string, '-');
     }
 
