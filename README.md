@@ -31,3 +31,24 @@ use sbs\helpers\TransliteratorHelper;
 // will echo AAAAAAAECEEEEIIIIDNOOOOOUUUUYssaaaaaaaeceeeeiiiidnooooouuuuyy
 TransliteratorHelper::process('ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöùúûüýÿ', 'en'));
 ```
+
+Also you can use it as application behavior:
+
+```
+use sbs\behaviors\SlugBehavior;
+
+//...
+public function behaviors()
+{
+    return [
+        //...
+        [
+            'class' => SlugBehavior::className(),
+            'attribute' => 'title',
+            'slugAttribute' => 'slug',
+        ],
+    ];
+}
+```
+
+That's all. Enjoy.
