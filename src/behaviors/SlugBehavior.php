@@ -24,7 +24,8 @@ class SlugBehavior extends SluggableBehavior
      */
     protected function generateSlug($slugParts)
     {
-        $string = TransliteratorHelper::process(implode('-', $slugParts));
+        $string = str_replace(' ', '-', implode('-', $slugParts));
+        $string = TransliteratorHelper::process($string);
 
         return $this->lowercase ? strtolower($string) : $string;
     }
