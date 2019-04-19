@@ -32,7 +32,7 @@ use sbs\helpers\TransliteratorHelper;
 TransliteratorHelper::process('ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöùúûüýÿ', 'en'));
 ```
 
-Also you can use it as application behavior:
+You can use it as application behavior:
 
 ```
 use sbs\behaviors\SlugBehavior;
@@ -43,12 +43,53 @@ public function behaviors()
     return [
         //...
         [
-            'class' => SlugBehavior::className(),
+            'class' => SlugBehavior::class,
             'attribute' => 'title',
             'slugAttribute' => 'slug',
         ],
     ];
 }
+```
+
+#### Since version 0.3 you can use SlugInput widget:
+
+**Configurations:**
+
+You need a registration controller in your main config file in section  `controllerMap`:
+
+```php
+use sbs\controllers\TransliterationController;
+
+//...
+'controllerMap' => [
+    'transliteration' => [
+        'class' => TransliterationController::class,
+        'lowercase' => false //provides transliteration to lower case, true by default.
+    ]
+],
+//...
+```
+
+**Like a widget:**
+
+```php
+use sbs\widgets\SlugInput;
+
+echo SlugInput::widget([
+    'name' => 'News[slug]',
+    'sourceName' => 'News[title]'
+]);
+```
+
+**Like an ActiveForm widget:**
+
+```php
+use sbs\widgets\SlugInput;
+
+echo $form->field($model, 'slug')->widget(SlugInput::class, [
+    'sourceAttribute' => 'title'
+]);
+
 ```
 
 That's all. Enjoy.

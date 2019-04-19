@@ -7,6 +7,9 @@ use sbs\helpers\TransliteratorHelper;
 
 class SlugBehavior extends SluggableBehavior
 {
+    /**
+     * @var bool setting provides transliteration to lower case.
+     */
     public $lowercase = true;
 
     /**
