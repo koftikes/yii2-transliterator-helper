@@ -3,7 +3,7 @@ Thumbs.db
 *.DS_Store
 *.empty
 
-#projects files
+# projects files
 .idea
 nbproject
 .buildpath
@@ -13,3 +13,7 @@ nbproject
 # mac deployment helpers
 switch
 index
+
+# composer
+/vendor
+composer.lock

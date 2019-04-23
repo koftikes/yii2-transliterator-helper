@@ -1,0 +1,5 @@
+includes:
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+parameters:
+    ignoreErrors:
+        - '#Access to static property \$app on an unknown class Yii.#'
