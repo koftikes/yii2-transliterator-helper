@@ -17,6 +17,6 @@ class TransliterationController extends Controller
     {
         $data = Yii::$app->request->get('data') ?: Yii::$app->request->post('data');
         $data = TransliteratorHelper::process($data);
-        echo $this->lowercase ? mb_strtolower($data) : $data;
+        echo $this->lowercase ? \mb_strtolower($data) : $data;
     }
 }

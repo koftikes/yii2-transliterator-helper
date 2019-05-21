@@ -97,7 +97,7 @@ class SlugInput extends Widget
         }
 
         $this->sourceId = $this->sourceName
-            ? mb_strtolower(str_replace(['[]', '][', '[', ']', ' '], ['', '-', '-', '', '-'], $this->sourceName))
+            ? \mb_strtolower(\str_replace(['[]', '][', '[', ']', ' '], ['', '-', '-', '', '-'], $this->sourceName))
             : Html::getInputId($this->sourceModel, $this->sourceAttribute);
     }
 
@@ -130,7 +130,7 @@ class SlugInput extends Widget
      */
     protected function registerClientScripts()
     {
-        $this->getView()->registerJs((string) preg_replace(['/\s+\n/', '/\n\s+/', '/ +/'], ['', '', ' '], "      
+        $this->getView()->registerJs((string) \preg_replace(['/\s+\n/', '/\n\s+/', '/ +/'], ['', '', ' '], "      
             $(function () {
                 var timer,
                     sourceField = $('#{$this->sourceId}'),

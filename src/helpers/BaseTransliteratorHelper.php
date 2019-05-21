@@ -23,7 +23,7 @@ abstract class BaseTransliteratorHelper
      */
     public static function process($string, $language = null)
     {
-        if (!preg_match('/[\x80-\xff]/', $string)) {
+        if (!\preg_match('/[\x80-\xff]/', $string)) {
             return $string;
         }
 
@@ -47,11 +47,11 @@ abstract class BaseTransliteratorHelper
                 } else {
                     $remaining = 0;
                 }
-                $tail_bytes[chr($n)] = $remaining;
+                $tail_bytes[\chr($n)] = $remaining;
             }
         }
 
-        preg_match_all('/[\x00-\x7f]+|[\x80-\xff][\x00-\x40\x5b-\x5f\x7b-\xff]*/', $string, $matches);
+        \preg_match_all('/[\x00-\x7f]+|[\x80-\xff][\x00-\x40\x5b-\x5f\x7b-\xff]*/', $string, $matches);
 
         $result = [];
         foreach ($matches[0] as $str) {
@@ -61,7 +61,7 @@ abstract class BaseTransliteratorHelper
             }
 
             $head  = '';
-            $chunk = strlen($str);
+            $chunk = \strlen($str);
             $len   = $chunk + 1;
             for ($i = -1; --$len;) {
                 $c = $str[++$i];
@@ -82,22 +82,18 @@ abstract class BaseTransliteratorHelper
                         }
                     } while (--$remaining);
 
-                    $n   = ord($head);
+                    $n   = \ord($head);
                     $ord = 0;
                     if ($n <= 0xdf) {
-                        $ord = ($n - 192) * 64 + (ord($sequence[1]) - 128);
+                        $ord = ($n - 192) * 64 + (\ord($sequence[1]) - 128);
                     } elseif ($n <= 0xef) {
-                        $ord = ($n - 224) * 4096 + (ord($sequence[1]) - 128) * 64 + (ord($sequence[2]) - 128);
+                        $ord = ($n - 224) * 4096 + (\ord($sequence[1]) - 128) * 64 + (\ord($sequence[2]) - 128);
                     } elseif ($n <= 0xf7) {
-                        $ord = ($n - 240)             * 262144         + (ord($sequence[1]) - 128)             * 4096         +
-                            (ord($sequence[2]) - 128) * 64             + (ord($sequence[3]) - 128);
+                        $ord = ($n - 240) * 262144 + (\ord($sequence[1]) - 128) * 4096 + (\ord($sequence[2]) - 128) * 64 + (\ord($sequence[3]) - 128);
                     } elseif ($n <= 0xfb) {
-                        $ord = ($n - 248)             * 16777216         + (ord($sequence[1]) - 128)             * 262144         +
-                            (ord($sequence[2]) - 128) * 4096             + (ord($sequence[3]) - 128) * 64             + (\ord($sequence[4]) - 128);
+                        $ord = ($n - 248) * 16777216 + (\ord($sequence[1]) - 128) * 262144 + (\ord($sequence[2]) - 128) * 4096 + (\ord($sequence[3]) - 128) * 64 + (\ord($sequence[4]) - 128);
                     } elseif ($n <= 0xfd) {
-                        $ord = ($n - 252)             * 1073741824         + (ord($sequence[1]) - 128)             * 16777216         +
-                            (ord($sequence[2]) - 128) * 262144             + (ord($sequence[3]) - 128) * 4096             +
-                            (ord($sequence[4]) - 128) * 64                 + (ord($sequence[5]) - 128);
+                        $ord = ($n - 252) * 1073741824 + (\ord($sequence[1]) - 128) * 16777216 + (\ord($sequence[2]) - 128) * 262144 + (\ord($sequence[3]) - 128) * 4096 + (\ord($sequence[4]) - 128) * 64 + (\ord($sequence[5]) - 128);
                     }
                     $result[] = static::replace($ord, $language);
                     $head     = '';
@@ -115,11 +111,11 @@ abstract class BaseTransliteratorHelper
             }
         }
 
-        $string = implode('', $result);
-        $string = (string) preg_replace('/[^a-zA-Z0-9=\s—–-]+/u', '', $string);
-        $string = (string) preg_replace('/[=\s—–-]+/u', '-', $string);
+        $string = \implode('', $result);
+        $string = (string) \preg_replace('/[^a-zA-Z0-9=\s—–-]+/u', '', $string);
+        $string = (string) \preg_replace('/[=\s—–-]+/u', '-', $string);
 
-        return trim($string, '-');
+        return \trim($string, '-');
     }
 
     /**
@@ -134,8 +130,8 @@ abstract class BaseTransliteratorHelper
 
         if (!isset($language)) {
             $language = Yii::$app->language;
-            if ($pos = mb_strpos($language, '-')) {
-                $language = mb_substr($language, 0, $pos);
+            if ($pos = \mb_strpos($language, '-')) {
+                $language = \mb_substr($language, 0, $pos);
             }
         }
 
@@ -144,9 +140,9 @@ abstract class BaseTransliteratorHelper
         if (!isset($map[$key][$language])) {
             $base     = [];
             $variant  = [];
-            $data_dir = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR;
-            $file     = realpath($data_dir . sprintf('x%02x', $key) . '.php');
-            if (false !== $file && file_exists($file)) {
+            $data_dir = \dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR;
+            $file     = \realpath($data_dir . \sprintf('x%02x', $key) . '.php');
+            if (false !== $file && \file_exists($file)) {
                 include $file;
                 // $base + $variant are included vars from
                 if (isset($variant[$language])) {

@@ -1,5 +1,4 @@
 <?php
-
 $finder = PhpCsFixer\Finder::create()
     ->in([__DIR__ . '/src', __DIR__ . '/tests']);
 
@@ -37,9 +36,11 @@ return PhpCsFixer\Config::create()
         'increment_style'                             => true,
         'is_null'                                     => true,
         'lowercase_cast'                              => true,
+        'mb_str_functions'                            => false, // Should be fixed in BaseTransliteratorHelper::replace
         'modernize_types_casting'                     => true,
         'multiline_comment_opening_closing'           => true,
         'native_function_casing'                      => true,
+        'native_function_invocation'                  => true,
         'new_with_braces'                             => true,
         'no_alias_functions'                          => true,
         'no_blank_lines_after_class_opening'          => true,
@@ -124,6 +125,7 @@ return PhpCsFixer\Config::create()
         'unary_operator_spaces'                       => true,
         'whitespace_after_comma_in_array'             => true,
         'yoda_style'                                  => true,
+        'declare_strict_types'                        => false, // Need to be changed when lock to PHP 7+
     ])
     ->setRiskyAllowed(true)
     ->setCacheFile('/tmp/.php_cs.cache');
