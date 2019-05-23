@@ -15,8 +15,12 @@ class TransliterationController extends Controller
 
     public function actionProcess()
     {
-        $data = Yii::$app->request->get('data') ?: Yii::$app->request->post('data');
-        $data = TransliteratorHelper::process($data);
-        echo $this->lowercase ? \mb_strtolower($data) : $data;
+        $data = Yii::$app->request->get('data', '') ?: Yii::$app->request->post('data', '');
+        if ('' !== $data) {
+            $data = TransliteratorHelper::process(\str_replace(' ', '-', $data));
+            echo $this->lowercase ? \mb_strtolower($data) : $data;
+        }
+
+        return null;
     }
 }
